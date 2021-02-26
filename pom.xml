@@ -16,15 +16,39 @@
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
         <testSourceDirectory>src/test/java</testSourceDirectory>
+        <!-- Loading all ${} -->
         <filters>
-            <filter>src/main/resources/profiles/${build.profile.id}/config.properties</filter>
+            <filter>src/main/resources/profiles/${env}/config.properties</filter>
         </filters>
         <resources>
+            <!--Maven will map the ${} in resources/db.properties with the active Maven profile properties.-->
             <resource>
-                <filtering>true</filtering>
                 <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>*.properties</include>
+                </includes>
             </resource>
         </resources>
+
+        <plugins>
+            <!-- display active profile in compile phase -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-help-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>show-profiles</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>active-profiles</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
     </build>
 
     <dependencies>
@@ -38,24 +62,24 @@
 
     <profiles>
         <profile>
-            <id>svil</id>
+            <id>dev</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <build.profile.id>svil</build.profile.id>
+                <env>dev</env>
             </properties>
         </profile>
         <profile>
             <id>test</id>
             <properties>
-                <build.profile.id>test</build.profile.id>
+                <env>test</env>
             </properties>
         </profile>
         <profile>
             <id>prod</id>
             <properties>
-                <build.profile.id>prod</build.profile.id>
+                <env>prod</env>
             </properties>
         </profile>
     </profiles>
